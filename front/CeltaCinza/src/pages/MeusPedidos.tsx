@@ -5,13 +5,7 @@ import StatusBadge from "../components/StatusBadge";
 import { cancelarPedido, listarPedidos } from "../services/pedidoService";
 import { STATUS_LABEL, type Pedido, type StatusPedido } from "../types/Pedido";
 import "./MeusPedidos.css";
-
-function formatarDia(data: string) {
-    return new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-    });
-}
+import { formatarDia } from "../hooks/formatarData";
 
 function podeAlterar(status: StatusPedido) {
     return status === "EM_ANALISE" || status === "APROVADO";

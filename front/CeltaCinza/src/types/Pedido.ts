@@ -30,8 +30,6 @@ export interface Banco {
     id: number;
     nome: string;
 }
-
-// Corpo enviado ao back-end ao criar um pedido.
 export interface NovoPedidoDTO {
     automovel: {
         marca: string;
@@ -43,5 +41,37 @@ export interface NovoPedidoDTO {
     };
     dataRetirada: string;
     dataDevolucao: string;
-    bancoId: number | null; // null = sem contrato de crédito
+    bancoId: number | null;
+}
+
+export interface Rendimento {
+    entidadeEmpregadora: string;
+    valor: number; 
+}
+export interface PedidoRecebido {
+    id: number;
+    cliente: {
+        nome: string;
+        cpf: string;
+        rg: string;
+        profissao: string;
+        rendimentos: Rendimento[]; 
+    };
+    automovel: {
+        marca: string;
+        modelo: string;
+        ano: number;
+        placa: string;
+        matricula: string;
+        proprietario: Proprietario;
+    };
+    comCredito: boolean;
+    dataRetirada: string;
+    dataDevolucao: string;
+    status: StatusPedido;
+}
+
+export interface ParecerDTO {
+    positivo: boolean;
+    observacoes: string;
 }

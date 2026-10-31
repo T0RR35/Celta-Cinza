@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import { criarPedido, listarBancos } from "../services/pedidoService";
 import type { Banco, Proprietario } from "../types/Pedido";
 import "./NovoPedido.css";
+import formatarData from "../hooks/formatarData";
 
 const ETAPAS = ["Automóvel", "Período", "Crédito", "Revisão"];
 
@@ -39,12 +40,6 @@ const FORM_INICIAL: FormPedido = {
     bancoId: "",
 };
 
-// "2026-11-05" -> "05/11/2026" (sem passar por Date, para evitar bug de fuso)
-function formatarData(data: string) {
-    const [ano, mes, dia] = data.split("-");
-    return `${dia}/${mes}/${ano}`;
-}
-
 export default function NovoPedido() {
     const navigate = useNavigate();
 
@@ -54,7 +49,7 @@ export default function NovoPedido() {
     const [erro, setErro] = useState("");
     const [enviando, setEnviando] = useState(false);
 
-    const hoje = new Date().toLocaleDateString("sv-SE"); // formato YYYY-MM-DD
+    const hoje = new Date().toLocaleDateString("sv-SE");
     const ultimaEtapa = etapa === ETAPAS.length - 1;
 
     useEffect(() => {
@@ -67,7 +62,6 @@ export default function NovoPedido() {
         setForm((atual) => ({ ...atual, [campo]: valor }));
     }
 
-    // Devolve a mensagem de erro da etapa, ou "" se estiver tudo certo.
     function validar(numeroEtapa: number): string {
         if (numeroEtapa === 0) {
             const ano = Number(form.ano);

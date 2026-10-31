@@ -1,4 +1,4 @@
-import type { Banco, NovoPedidoDTO, Pedido } from "../types/Pedido";
+import type { Banco, NovoPedidoDTO, ParecerDTO, Pedido, PedidoRecebido } from "../types/Pedido";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -38,4 +38,19 @@ export async function listarBancos(): Promise<Banco[]> {
     const resposta = await fetch(`${API_URL}/bancos`, { headers: headers() });
     if (!resposta.ok) throw new Error("Falha ao carregar bancos");
     return resposta.json();
+}
+
+export async function listarPedidosRecebidos(): Promise<PedidoRecebido[]> {
+    const resposta = await fetch(`${API_URL}/pedidos/recebidos`, { headers: headers() });
+    if (!resposta.ok) throw new Error("Falha ao carregar pedidos recebidos");
+    return resposta.json();
+}
+
+export async function registrarParecer(id: number, parecer: ParecerDTO): Promise<void> {
+    const resposta = await fetch(`${API_URL}/pedidos/${id}/parecer`, {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify(parecer),
+    });
+    if (!resposta.ok) throw new Error("Falha ao registrar parecer");
 }
