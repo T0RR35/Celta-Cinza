@@ -9,10 +9,10 @@ import MeusPedidos from "./pages/MeusPedidos";
 import DetalhePedido from "./pages/DetalhePedido";
 import NovoPedido from "./pages/NovoPedido";
 import Recebidos from "./pages/Recebidos";
-import Contratos from "./pages/Contratos";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
-import Perfil from "./pages/Perfil";
+import ClientePerfil from "./pages/ClientePerfil";
+import AgentePerfil from "./pages/AgentePerfil";
 
 export default function App() {
   const [usuario, setUsuario] = useState<UsuarioLogado | null>({
@@ -45,6 +45,7 @@ export default function App() {
               <Route path="/pedidos" element={<MeusPedidos />} />
               <Route path="/pedidos/novo" element={<NovoPedido />} />
               <Route path="/pedidos/:id" element={<DetalhePedido />} />
+              <Route path="/perfil" element={<ClientePerfil />} />
             </Route>
 
             {/* agente */}
@@ -52,11 +53,8 @@ export default function App() {
               <RotaProtegida usuario={usuario} perfilPermitido="AGENTE" />
             }>
               <Route path="/recebidos" element={<Recebidos />} />
-              <Route path="/contratos" element={<Contratos />} />
+              <Route path="/perfil" element={<AgentePerfil />} />
             </Route>
-
-            {/* os dois */}
-            <Route path="/perfil" element={<Perfil />} />
           </Route>
         </Route>
 

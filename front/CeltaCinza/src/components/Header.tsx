@@ -22,7 +22,6 @@ const LINKS: Record<Perfil, LinkItem[]> = {
     ],
     AGENTE: [
         { label: "Pedidos recebidos", to: "/recebidos" },
-        { label: "Contratos", to: "/contratos" },
         { label: "Meu perfil", to: "/perfil" },
     ],
 };
