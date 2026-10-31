@@ -1,0 +1,96 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 48px;
+    background: #fff;
+    border-bottom: 2px solid #333;
+}
+
+.header__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    color: #222;
+    text-decoration: none;
+}
+
+.header__logo {
+    height: 32px;
+    width: auto;
+}
+
+.header__nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: 1;
+    margin-left: 16px;
+}
+
+.header__link {
+    padding: 6px 0;
+    color: #555;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+}
+
+.header__link:hover {
+    color: #111;
+}
+
+.header__link--active {
+    color: #111;
+    font-weight: 700;
+    border-bottom-color: #111;
+}
+
+.header__user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header__username {
+    color: #555;
+}
+
+.header__logout {
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #222;
+    background: #fff;
+    border: 2px solid #222;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.header__logout:hover {
+    background: #222;
+    color: #fff;
+}
+
+@media (max-width: 760px) {
+    .header {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .header__nav {
+        order: 3;
+        width: 100%;
+        margin-left: 0;
+        overflow-x: auto;
+    }
+
+    .header__user {
+        margin-left: auto;
+    }
+}

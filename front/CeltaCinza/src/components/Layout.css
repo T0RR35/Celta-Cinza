@@ -1,0 +1,38 @@
+:root {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: #222;
+}
+
+body {
+    margin: 0;
+    background: #f2f2f0;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout__content {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 32px 48px;
+}
+
+.layout__footer {
+    padding: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    border-top: 1px solid #bbb;
+}
+
+@media (max-width: 760px) {
+    .layout__content {
+        padding: 20px 16px;
+    }
+}
