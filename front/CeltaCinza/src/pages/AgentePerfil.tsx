@@ -2,6 +2,6 @@
 
 export default function AgentePerfil(){
     return(
-        <h1>Meu perfil</h1>
+        <h1>Meu peraqfil</h1>
     )
 }
