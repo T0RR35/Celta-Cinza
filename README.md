@@ -1,4 +1,4 @@
-# CeltaPreto
+# CeltaCinza
 
 > [!NOTE]
 > Sistema web para gestão de aluguéis de automóveis: o cliente cria, consulta, modifica e cancela pedidos pela Internet, e os agentes (empresas e bancos) avaliam financeiramente cada pedido e executam o contrato.
@@ -7,12 +7,12 @@
   <tr>
     <td width="600px">
       <div align="justify">
-        O <b>CeltaPreto</b> foi desenvolvido no <b>Laboratório 02</b> da disciplina de <b>Desenvolvimento e Integração de Aplicações Web (DIAW)</b>, do curso de Engenharia de Software da PUC Minas. O sistema centraliza o fluxo de aluguel de automóveis: cadastro e login obrigatórios, pedidos de aluguel com status acompanhável, análise financeira feita por agentes e contratos de crédito concedidos por bancos. O projeto segue a arquitetura <b>MVC</b> no back-end (Spring Boot), usa <b>React + Vite</b> no front-end e <b>Supabase (PostgreSQL)</b> como banco de dados, com a modelagem UML versionada junto ao código.
+        O <b>CeltaCinza</b> foi desenvolvido no <b>Laboratório 02</b> da disciplina de <b>Desenvolvimento e Integração de Aplicações Web (DIAW)</b>, do curso de Engenharia de Software da PUC Minas. O sistema centraliza o fluxo de aluguel de automóveis: cadastro e login obrigatórios, pedidos de aluguel com status acompanhável, análise financeira feita por agentes e contratos de crédito concedidos por bancos. O projeto segue a arquitetura <b>MVC</b> no back-end (Spring Boot), usa <b>React + Vite</b> no front-end e <b>Supabase (PostgreSQL)</b> como banco de dados, com a modelagem UML versionada junto ao código.
       </div>
     </td>
     <td width="250px">
       <div>
-        <img src="docs/logo.png" alt="Logo do CeltaPreto" width="250px"/>
+        <img src="docs/logo.png" alt="Logo do CeltaCinza" width="250px"/>
       </div>
     </td>
   </tr>
@@ -29,7 +29,7 @@
 ---
 
 ## 📚 Índice
-- [CeltaPreto](#celtapreto)
+- [CeltaCinza](#celtacinza)
   - [🚧 Status do Projeto](#-status-do-projeto)
   - [📚 Índice](#-índice)
   - [🔗 Links Úteis](#-links-úteis)
@@ -76,13 +76,13 @@
 
 Gerir aluguéis de automóveis envolve vários participantes: o cliente que contrata, a empresa ou o banco que avalia a capacidade financeira e, muitas vezes, um banco que concede o crédito. Fazer isso sem um sistema centralizado dificulta acompanhar o andamento de cada pedido.
 
-O **CeltaPreto** resolve isso oferecendo um ponto único pela Internet:
+O **CeltaCinza** resolve isso oferecendo um ponto único pela Internet:
 
 - O **cliente** mantém seus dados (identificação, profissão e até 3 rendimentos) e acompanha o status de cada pedido de aluguel.
 - O **agente** (empresa ou banco) analisa financeiramente os pedidos e, com parecer positivo, executa o contrato.
 - O **banco** pode conceder o contrato de crédito associado ao aluguel.
 
-> 🌧️ **Sobre o nome:** "Celta Preto" é uma brincadeira com "céu tá preto". Por isso a logo é um carro em formato de nuvem, com chuvinha embaixo.
+> 🌧️ **Sobre o nome:** "Celta Cinza" é uma brincadeira com "céu tá cinza". Por isso a logo é um carro em formato de nuvem, com chuvinha embaixo.
 
 O projeto nasceu como trabalho acadêmico (DIAW, PUC Minas) e serve também como peça do portfólio profissional.
 
@@ -188,7 +188,7 @@ Crie `frontend/.env` com o prefixo `VITE_`.
 
 ```bash
 git clone <URL_DO_REPOSITORIO>
-cd celtapreto
+cd celtacinza
 ```
 
 #### Front-end (React)
