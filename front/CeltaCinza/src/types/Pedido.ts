@@ -12,7 +12,6 @@ export const STATUS_LABEL: Record<StatusPedido, string> = {
     CONTRATO_ASSINADO: "Contrato assinado",
     CANCELADO: "Cancelado",
 };
-
 export interface Pedido {
     id: number;
     automovel: {
@@ -23,4 +22,26 @@ export interface Pedido {
     dataRetirada: string; 
     dataDevolucao: string; 
     status: StatusPedido;
+}
+
+export type Proprietario = "CLIENTE" | "EMPRESA" | "BANCO";
+
+export interface Banco {
+    id: number;
+    nome: string;
+}
+
+// Corpo enviado ao back-end ao criar um pedido.
+export interface NovoPedidoDTO {
+    automovel: {
+        marca: string;
+        modelo: string;
+        ano: number;
+        placa: string;
+        matricula: string;
+        proprietario: Proprietario;
+    };
+    dataRetirada: string;
+    dataDevolucao: string;
+    bancoId: number | null; // null = sem contrato de crédito
 }
