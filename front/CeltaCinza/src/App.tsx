@@ -3,9 +3,14 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import type { UsuarioLogado } from "./types/UsuarioLogado";
 import Layout from "./components/Layout";
 
-function Placeholder({ titulo }: { titulo: string }) {
-  return <h1>{titulo}</h1>;
-}
+import MeusPedidos from "./pages/MeusPedidos"
+import DetalhePedido from "./pages/DetalhePedido";
+import NovoPedido from "./pages/NovoPedido";
+import Recebidos from "./pages/Recebidos";
+import Contratos from "./pages/Contratos";
+import Login from "./pages/Login";
+import Cadastro from "./pages/Cadastro";
+import Perfil from "./pages/Perfil";
 
 export default function App() {
   const [usuario, setUsuario] = useState<UsuarioLogado | null>({
@@ -18,8 +23,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Placeholder titulo="Entrar" />} />
-        <Route path="/cadastro" element={<Placeholder titulo="Criar conta" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
 
         {/* so renderiza o layout se o user tiver logado */}
         <Route
@@ -32,16 +37,16 @@ export default function App() {
           }
         >
           {/* cliente */}
-          <Route path="/pedidos" element={<Placeholder titulo="Meus pedidos" />} />
-          <Route path="/pedidos/novo" element={<Placeholder titulo="Novo pedido" />} />
-          <Route path="/pedidos/:id" element={<Placeholder titulo="Detalhe do pedido" />} />
+          <Route path="/pedidos" element={<MeusPedidos />} />
+          <Route path="/pedidos/novo" element={<NovoPedido />} />
+          <Route path="/pedidos/:id" element={<DetalhePedido />} />
 
           {/* agente */}
-          <Route path="/recebidos" element={<Placeholder titulo="Pedidos recebidos" />} />
-          <Route path="/contratos" element={<Placeholder titulo="Contratos" />} />
+          <Route path="/recebidos" element={<Recebidos />} />
+          <Route path="/contratos" element={<Contratos />} />
 
           {/* os dois */}
-          <Route path="/perfil" element={<Placeholder titulo="Meu perfil" />} />
+          <Route path="/perfil" element={<Perfil />} />
         </Route>
 
         <Route path="*" element={<Navigate to={usuario ? inicio : "/login"} replace />} />
