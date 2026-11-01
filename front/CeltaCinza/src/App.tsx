@@ -16,8 +16,8 @@ import AgentePerfil from "./pages/AgentePerfil";
 
 export default function App() {
   const [usuario, setUsuario] = useState<UsuarioLogado | null>({
-    nome: "agente",
-    perfil: "AGENTE",
+    nome: "cliente",
+    perfil: "CLIENTE",
   });
 
   const inicio = usuario?.perfil === "AGENTE" ? "/recebidos" : "/pedidos";
