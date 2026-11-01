@@ -1,6 +1,6 @@
 package com.celtacinza.dto;
 
-import com.celtacinza.model.PedidoAluguel;
+import com.celtacinza.model.Pedido;
 import com.celtacinza.model.StatusPedido;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ public record PedidoRecebidoResponse(
         StatusPedido status
 ) {
 
-    public static PedidoRecebidoResponse from(PedidoAluguel p) {
+    public static PedidoRecebidoResponse from(Pedido p) {
         return new PedidoRecebidoResponse(
                 p.getId(),
                 ClienteResponse.from(p.getCliente()),

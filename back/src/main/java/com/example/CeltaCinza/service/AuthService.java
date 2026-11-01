@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,7 +31,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
-        Usuario usuario = usuarioRepository.findByUsuario(request.usuario())
+        Usuario usuario = buscarPorEmail(request.usuario())
                 .filter(u -> passwordEncoder.matches(request.senha(), u.getSenha()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário ou senha inválidos"));
 
@@ -37,7 +39,7 @@ public class AuthService {
     }
 
     public void cadastrar(CadastroRequest request) {
-        if (usuarioRepository.existsByUsuario(request.usuario())) {
+        if (buscarPorEmail(request.usuario()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Esse usuário já está em uso");
         }
 
@@ -49,7 +51,7 @@ public class AuthService {
             }
             Cliente cliente = new Cliente();
             cliente.setNome(request.nome());
-            cliente.setUsuario(request.usuario());
+            cliente.setEmail(request.usuario());
             cliente.setSenha(senhaHash);
             cliente.setCpf(request.cpf());
             cliente.setRg(request.rg());
@@ -59,10 +61,16 @@ public class AuthService {
         } else {
             Agente agente = new Agente();
             agente.setNome(request.nome());
-            agente.setUsuario(request.usuario());
+            agente.setEmail(request.usuario());
             agente.setSenha(senhaHash);
             agente.setTipo(request.tipoConta() == TipoConta.BANCO ? TipoAgente.BANCO : TipoAgente.EMPRESA);
             agenteRepository.save(agente);
         }
+    }
+
+    private Optional<Usuario> buscarPorEmail(String email) {
+        return usuarioRepository.findAll().stream()
+                .filter(u -> email.equals(u.getEmail()))
+                .findFirst();
     }
 }

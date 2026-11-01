@@ -6,7 +6,7 @@ import com.celtacinza.model.Cliente;
 import com.celtacinza.model.Rendimento;
 import com.celtacinza.repository.AutomovelRepository;
 import com.celtacinza.repository.ClienteRepository;
-import com.celtacinza.repository.PedidoAluguelRepository;
+import com.celtacinza.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
-    private final PedidoAluguelRepository pedidoRepository;
+    private final PedidoRepository pedidoRepository;
     private final AutomovelRepository automovelRepository;
 
     @Transactional(readOnly = true)

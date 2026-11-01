@@ -23,7 +23,7 @@ public class ContratoAluguel {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "pedido_id", nullable = false, unique = true)
-    private PedidoAluguel pedido;
+    private Pedido pedido;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "contrato_credito_id", unique = true)

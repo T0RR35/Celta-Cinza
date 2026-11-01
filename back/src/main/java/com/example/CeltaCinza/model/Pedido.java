@@ -41,7 +41,7 @@ public class Pedido {
     private Agente bancoSolicitado;
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
-    private ParecerFinanceiro parecer;
+    private Parecer parecer;
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
     private ContratoAluguel contrato;

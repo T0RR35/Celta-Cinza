@@ -20,7 +20,7 @@ public class Agente extends Usuario {
     private TipoAgente tipo;
 
     @OneToMany(mappedBy = "agente")
-    private List<ParecerFinanceiro> pareceres = new ArrayList<>();
+    private List<Parecer> pareceres = new ArrayList<>();
 
     @OneToMany(mappedBy = "banco")
     private List<ContratoCredito> contratosCredito = new ArrayList<>();

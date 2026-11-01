@@ -33,7 +33,7 @@ public class Cliente extends Usuario {
     private List<Rendimento> rendimentos = new ArrayList<>();
 
     @OneToMany(mappedBy = "cliente")
-    private List<PedidoAluguel> pedidos = new ArrayList<>();
+    private List<Pedido> pedidos = new ArrayList<>();
 
     public void adicionarRendimento(Rendimento rendimento) {
         if (rendimentos.size() >= 3) {

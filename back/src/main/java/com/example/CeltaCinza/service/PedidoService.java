@@ -5,7 +5,7 @@ import com.celtacinza.model.*;
 import com.celtacinza.repository.AgenteRepository;
 import com.celtacinza.repository.AutomovelRepository;
 import com.celtacinza.repository.ClienteRepository;
-import com.celtacinza.repository.PedidoAluguelRepository;
+import com.celtacinza.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 @Transactional
 public class PedidoService {
 
-    private final PedidoAluguelRepository pedidoRepository;
+    private final PedidoRepository pedidoRepository;
     private final ClienteRepository clienteRepository;
     private final AgenteRepository agenteRepository;
     private final AutomovelRepository automovelRepository;
@@ -41,14 +41,14 @@ public class PedidoService {
         Cliente cliente = obterCliente(usuario);
         validarDatas(request);
 
-        PedidoAluguel pedido = new PedidoAluguel();
+        Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
         preencher(pedido, cliente, request);
         return PedidoResponse.from(pedidoRepository.save(pedido));
     }
 
     public PedidoResponse modificar(Long id, String usuario, NovoPedidoRequest request) {
-        PedidoAluguel pedido = obterPedidoDoCliente(id, usuario);
+        Pedido pedido = obterPedidoDoCliente(id, usuario);
         exigirAlteravel(pedido);
         validarDatas(request);
 
@@ -57,7 +57,7 @@ public class PedidoService {
     }
 
     public void cancelar(Long id, String usuario) {
-        PedidoAluguel pedido = obterPedidoDoCliente(id, usuario);
+        Pedido pedido = obterPedidoDoCliente(id, usuario);
         exigirAlteravel(pedido);
         pedido.setStatus(StatusPedido.CANCELADO);
     }
@@ -72,7 +72,7 @@ public class PedidoService {
     public void registrarParecer(Long id, String usuario, ParecerRequest request) {
         Agente agente = agenteRepository.findByUsuario(usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas agentes podem avaliar pedidos"));
-        PedidoAluguel pedido = pedidoRepository.findById(id)
+        Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
 
         if (pedido.getStatus() != StatusPedido.EM_ANALISE) {
@@ -83,7 +83,7 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Explique o motivo do parecer negativo");
         }
 
-        ParecerFinanceiro parecer = new ParecerFinanceiro();
+        Parecer parecer = new Parecer();
         parecer.setPedido(pedido);
         parecer.setAgente(agente);
         parecer.setPositivo(positivo);
@@ -93,7 +93,7 @@ public class PedidoService {
         pedido.setStatus(positivo ? StatusPedido.APROVADO : StatusPedido.REPROVADO);
     }
 
-    private void preencher(PedidoAluguel pedido, Cliente cliente, NovoPedidoRequest request) {
+    private void preencher(Pedido pedido, Cliente cliente, NovoPedidoRequest request) {
         pedido.setDataRetirada(request.dataRetirada());
         pedido.setDataDevolucao(request.dataDevolucao());
         pedido.setAutomovel(resolverAutomovel(cliente, request.automovel()));
@@ -131,7 +131,7 @@ public class PedidoService {
         }
     }
 
-    private void exigirAlteravel(PedidoAluguel pedido) {
+    private void exigirAlteravel(Pedido pedido) {
         if (!pedido.permiteAlteracao()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Só é possível alterar pedidos em análise ou aprovados");
@@ -143,7 +143,7 @@ public class PedidoService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas clientes podem acessar seus pedidos"));
     }
 
-    private PedidoAluguel obterPedidoDoCliente(Long id, String usuario) {
+    private Pedido obterPedidoDoCliente(Long id, String usuario) {
         Cliente cliente = obterCliente(usuario);
         return pedidoRepository.findByIdAndClienteId(id, cliente.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
