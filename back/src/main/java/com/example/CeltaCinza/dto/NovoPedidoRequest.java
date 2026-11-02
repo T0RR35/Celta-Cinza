@@ -7,14 +7,16 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record NovoPedidoRequest(
-        @NotNull @Valid
+        @NotNull(message = "Informe os dados do automóvel")
+        @Valid
         AutomovelRequest automovel,
 
         @NotNull(message = "Informe a data de retirada")
-        @FutureOrPresent(message = "A retirada não pode ser no passado")
+        @FutureOrPresent(message = "A data de retirada não pode estar no passado")
         LocalDate dataRetirada,
 
         @NotNull(message = "Informe a data de devolução")
+        @FutureOrPresent(message = "A data de devolução não pode estar no passado")
         LocalDate dataDevolucao,
 
         Long bancoId

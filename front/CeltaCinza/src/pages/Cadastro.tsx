@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AgenteForm from "../components/cadastro/AgenteForm";
 import ClienteForm from "../components/cadastro/ClienteForm";
 import { cadastrar } from "../services/authService";
+import { mensagemDeErro } from "../services/api";
 import type { CadastroDTO, TipoConta } from "../types/Auth";
 import "./Auth.css";
 
@@ -31,12 +32,7 @@ export default function Cadastro() {
             await cadastrar(dados);
             navigate("/login", { state: { cadastrado: true } });
         } catch (err) {
-            const usuarioExistente = err instanceof Error && err.message === "USUARIO_EXISTENTE";
-            setErro(
-                usuarioExistente
-                    ? "Esse usuário já está em uso. Escolha outro."
-                    : "Não foi possível criar a conta. Tente novamente em instantes.",
-            );
+            setErro(mensagemDeErro(err, "Não foi possível criar a conta. Tente novamente em instantes."));
         } finally {
             setEnviando(false);
         }

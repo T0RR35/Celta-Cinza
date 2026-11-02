@@ -12,12 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class PedidoService {
+
+    private static final int ANO_MAXIMO = LocalDate.now().getYear() + 1;
 
     private final PedidoRepository pedidoRepository;
     private final ClienteRepository clienteRepository;
@@ -71,25 +74,35 @@ public class PedidoService {
 
     public void registrarParecer(Long id, String usuario, ParecerRequest request) {
         Agente agente = agenteRepository.findByEmail(usuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas agentes podem avaliar pedidos"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Apenas agentes podem avaliar pedidos."));
         Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado."));
 
         if (pedido.getStatus() != StatusPedido.EM_ANALISE) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Este pedido já foi avaliado");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Este pedido já foi avaliado e não aceita um novo parecer.");
         }
+
+        if (request.positivo() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Informe se o parecer é positivo ou negativo.");
+        }
+
         boolean positivo = request.positivo();
-        if (!positivo && (request.observacoes() == null || request.observacoes().isBlank())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Explique o motivo do parecer negativo");
+        String observacoes = texto(request.observacoes());
+        if (!positivo && observacoes.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Explique nas observações o motivo do parecer negativo.");
         }
 
         Parecer parecer = new Parecer();
         parecer.setPedido(pedido);
         parecer.setAgente(agente);
         parecer.setPositivo(positivo);
-        parecer.setObservacoes(request.observacoes());
+        parecer.setObservacoes(observacoes.isEmpty() ? null : observacoes);
 
-        pedido.setParecer(parecer); 
+        pedido.setParecer(parecer);
         pedido.setStatus(positivo ? StatusPedido.APROVADO : StatusPedido.REPROVADO);
     }
 
@@ -101,17 +114,40 @@ public class PedidoService {
     }
 
     private Automovel resolverAutomovel(Cliente cliente, AutomovelRequest dados) {
+        if (dados == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Informe os dados do automóvel.");
+        }
+        if (dados.proprietario() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Informe o proprietário do automóvel.");
+        }
         if (dados.proprietario() != TipoConta.CLIENTE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Por enquanto só é possível alugar automóveis do próprio cliente");
+                    "Por enquanto, o pedido só pode ser feito com um automóvel de propriedade do próprio cliente. "
+                            + "Selecione 'Cliente' como proprietário.");
         }
-        return automovelRepository.findByPlaca(dados.placa()).orElseGet(() -> {
+        if (dados.ano() == null || dados.ano() > ANO_MAXIMO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "O ano do automóvel não pode ser superior a " + ANO_MAXIMO + ".");
+        }
+
+        String placa = texto(dados.placa()).toUpperCase();
+        String matricula = texto(dados.matricula());
+
+        return automovelRepository.findByPlaca(placa).map(automovel -> {
+            boolean mesmoProprietario = automovel.getProprietario() != null
+                    && automovel.getProprietario().getId().equals(cliente.getId());
+            if (!mesmoProprietario) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Já existe um automóvel cadastrado com essa placa para outro proprietário.");
+            }
+            return automovel;
+        }).orElseGet(() -> {
             Automovel automovel = new Automovel();
-            automovel.setMarca(dados.marca());
-            automovel.setModelo(dados.modelo());
+            automovel.setMarca(texto(dados.marca()));
+            automovel.setModelo(texto(dados.modelo()));
             automovel.setAno(dados.ano());
-            automovel.setPlaca(dados.placa());
-            automovel.setMatricula(dados.matricula());
+            automovel.setPlaca(placa);
+            automovel.setMatricula(matricula);
             automovel.setProprietario(cliente);
             return automovelRepository.save(automovel);
         });
@@ -122,30 +158,46 @@ public class PedidoService {
             return null;
         }
         return agenteRepository.findByIdAndTipo(bancoId, TipoAgente.BANCO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Banco inválido"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Banco selecionado não encontrado. Atualize a página e escolha um banco válido."));
     }
 
     private void validarDatas(NovoPedidoRequest request) {
+        if (request.dataRetirada() == null || request.dataDevolucao() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Informe as datas de retirada e devolução.");
+        }
+        if (request.dataRetirada().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "A data de retirada não pode estar no passado.");
+        }
         if (request.dataDevolucao().isBefore(request.dataRetirada())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A devolução não pode ser antes da retirada");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "A data de devolução não pode ser anterior à data de retirada.");
         }
     }
 
     private void exigirAlteravel(Pedido pedido) {
         if (!pedido.permiteAlteracao()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Só é possível alterar pedidos em análise ou aprovados");
+                    "Só é possível alterar ou cancelar pedidos em análise ou aprovados.");
         }
     }
 
     private Cliente obterCliente(String usuario) {
         return clienteRepository.findByEmail(usuario)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas clientes podem acessar seus pedidos"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Apenas clientes podem acessar seus pedidos."));
     }
 
     private Pedido obterPedidoDoCliente(Long id, String usuario) {
         Cliente cliente = obterCliente(usuario);
         return pedidoRepository.findByIdAndClienteId(id, cliente.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Pedido não encontrado."));
+    }
+
+    private String texto(String valor) {
+        return valor == null ? "" : valor.trim();
     }
 }

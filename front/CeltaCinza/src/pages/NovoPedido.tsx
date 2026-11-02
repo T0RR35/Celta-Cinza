@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { criarPedido, listarBancos } from "../services/pedidoService";
+import { mensagemDeErro } from "../services/api";
 import type { Banco, Proprietario } from "../types/Pedido";
 import "./NovoPedido.css";
 import formatarData from "../hooks/formatarData";
@@ -71,6 +72,12 @@ export default function NovoPedido() {
             if (!Number.isInteger(ano) || ano < 1900 || ano > new Date().getFullYear() + 1) {
                 return "Informe um ano válido.";
             }
+            if (!/^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/i.test(form.placa.trim())) {
+                return "Informe uma placa válida, no formato ABC1234 ou ABC1D23.";
+            }
+            if (form.proprietario !== "CLIENTE") {
+                return "Por enquanto, o pedido só pode ser feito com um automóvel de propriedade do próprio cliente. Selecione “Cliente” como proprietário.";
+            }
         }
         if (numeroEtapa === 1) {
             if (!form.dataRetirada || !form.dataDevolucao) return "Informe as datas de retirada e devolução.";
@@ -99,8 +106,8 @@ export default function NovoPedido() {
                 bancoId: form.comCredito ? Number(form.bancoId) : null,
             });
             navigate("/pedidos");
-        } catch {
-            setErro("Não foi possível enviar o pedido. Tente novamente.");
+        } catch (err) {
+            setErro(mensagemDeErro(err, "Não foi possível enviar o pedido. Tente novamente."));
         } finally {
             setEnviando(false);
         }
@@ -113,6 +120,15 @@ export default function NovoPedido() {
         if (mensagem) return;
 
         if (ultimaEtapa) {
+            // Revalida as etapas anteriores antes de enviar (ex.: proprietário alterado).
+            for (let i = 0; i < ETAPAS.length - 1; i++) {
+                const pendente = validar(i);
+                if (pendente) {
+                    setErro(pendente);
+                    setEtapa(i);
+                    return;
+                }
+            }
             enviar();
         } else {
             setEtapa(etapa + 1);
@@ -179,11 +195,14 @@ export default function NovoPedido() {
                                 <label htmlFor="proprietario">Proprietário</label>
                                 <select id="proprietario" className="campo" value={form.proprietario} onChange={(e) => atualizar("proprietario", e.target.value as Proprietario)}>
                                     {PROPRIETARIOS.map((p) => (
-                                        <option key={p.valor} value={p.valor}>
-                                            {p.rotulo}
+                                        <option key={p.valor} value={p.valor} disabled={p.valor !== "CLIENTE"}>
+                                            {p.rotulo}{p.valor !== "CLIENTE" ? " (em breve)" : ""}
                                         </option>
                                     ))}
                                 </select>
+                                <p className="novo__aviso">
+                                    Por enquanto, o pedido só pode ser feito com um automóvel de propriedade do próprio cliente.
+                                </p>
                             </div>
                         </div>
                     )}

@@ -34,12 +34,12 @@ public class AgenteService {
     @Transactional
     public AgenteResponse atualizar(String usuario, AgenteUpdateRequest request) {
         Agente agente = obter(usuario);
-        agente.setNome(request.nome());
+        agente.setNome(request.nome().trim());
         return AgenteResponse.from(agente);
     }
 
     private Agente obter(String email) {
         return agenteRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agente não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agente não encontrado."));
     }
 }

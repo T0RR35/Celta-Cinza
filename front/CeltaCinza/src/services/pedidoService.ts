@@ -1,9 +1,9 @@
 import type { Banco, NovoPedidoDTO, ParecerDTO, Pedido, PedidoRecebido } from "../types/Pedido";
-import { API_URL, authHeaders as headers } from "./api";
+import { API_URL, authHeaders as headers, erroDaResposta } from "./api";
 
 export async function listarPedidos(): Promise<Pedido[]> {
     const resposta = await fetch(`${API_URL}/pedidos`, { headers: headers() });
-    if (!resposta.ok) throw new Error("Falha ao carregar pedidos");
+    if (!resposta.ok) throw await erroDaResposta(resposta);
     return resposta.json();
 }
 
@@ -12,7 +12,7 @@ export async function cancelarPedido(id: number): Promise<void> {
         method: "PATCH",
         headers: headers(),
     });
-    if (!resposta.ok) throw new Error("Falha ao cancelar pedido");
+    if (!resposta.ok) throw await erroDaResposta(resposta);
 }
 
 export async function criarPedido(dados: NovoPedidoDTO): Promise<Pedido> {
@@ -21,19 +21,19 @@ export async function criarPedido(dados: NovoPedidoDTO): Promise<Pedido> {
         headers: headers(),
         body: JSON.stringify(dados),
     });
-    if (!resposta.ok) throw new Error("Falha ao criar pedido");
+    if (!resposta.ok) throw await erroDaResposta(resposta);
     return resposta.json();
 }
 
 export async function listarBancos(): Promise<Banco[]> {
     const resposta = await fetch(`${API_URL}/bancos`, { headers: headers() });
-    if (!resposta.ok) throw new Error("Falha ao carregar bancos");
+    if (!resposta.ok) throw await erroDaResposta(resposta);
     return resposta.json();
 }
 
 export async function listarPedidosRecebidos(): Promise<PedidoRecebido[]> {
     const resposta = await fetch(`${API_URL}/pedidos/recebidos`, { headers: headers() });
-    if (!resposta.ok) throw new Error("Falha ao carregar pedidos recebidos");
+    if (!resposta.ok) throw await erroDaResposta(resposta);
     return resposta.json();
 }
 
@@ -43,5 +43,5 @@ export async function registrarParecer(id: number, parecer: ParecerDTO): Promise
         headers: headers(),
         body: JSON.stringify(parecer),
     });
-    if (!resposta.ok) throw new Error("Falha ao registrar parecer");
+    if (!resposta.ok) throw await erroDaResposta(resposta);
 }

@@ -7,7 +7,7 @@ public record ParecerRequest(
         @NotNull(message = "Informe se o parecer é positivo ou negativo")
         Boolean positivo,
 
-        @Size(max = 500)
+        @Size(max = 500, message = "As observações devem ter no máximo 500 caracteres")
         String observacoes
 ) {
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
 import { cancelarPedido, listarPedidos } from "../services/pedidoService";
+import { mensagemDeErro } from "../services/api";
 import { STATUS_LABEL, type Pedido, type StatusPedido } from "../types/Pedido";
 import "./MeusPedidos.css";
 import { formatarDia } from "../hooks/formatarData";
@@ -24,7 +25,7 @@ export default function MeusPedidos() {
         let ativo = true;
         listarPedidos()
             .then((dados) => ativo && setPedidos(dados))
-            .catch(() => ativo && setErro("Não foi possível carregar os pedidos."))
+            .catch((err) => ativo && setErro(mensagemDeErro(err, "Não foi possível carregar os pedidos.")))
             .finally(() => ativo && setCarregando(false));
         return () => {
             ativo = false;
@@ -48,8 +49,8 @@ export default function MeusPedidos() {
             setPedidos((atual) =>
                 atual.map((p) => (p.id === id ? { ...p, status: "CANCELADO" } : p)),
             );
-        } catch {
-            setErro("Não foi possível cancelar o pedido.");
+        } catch (err) {
+            setErro(mensagemDeErro(err, "Não foi possível cancelar o pedido."));
         }
     }
 

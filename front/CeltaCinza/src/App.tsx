@@ -71,7 +71,6 @@ export default function App() {
               />
             }
           >
-            {/* perfil - comum aos dois perfis, escolhido pelo tipo de usuário */}
             <Route
               path="/perfil"
               element={

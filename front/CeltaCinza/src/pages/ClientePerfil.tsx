@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Button from "../components/Button";
 import { atualizarCliente, buscarCliente, excluirCliente } from "../services/perfilService";
+import { mensagemDeErro } from "../services/api";
 import type { DadosCliente } from "../types/Perfil";
 import "./Perfil.css";
 
@@ -53,7 +54,7 @@ export default function PerfilCliente({ onNomeAtualizado, onContaExcluida }: Per
                 setDados(d);
                 setForm(paraForm(d));
             })
-            .catch(() => ativo && setErro("Não foi possível carregar o seu perfil."))
+            .catch((err) => ativo && setErro(mensagemDeErro(err, "Não foi possível carregar o seu perfil.")))
             .finally(() => ativo && setCarregando(false));
         return () => {
             ativo = false;
@@ -141,8 +142,8 @@ export default function PerfilCliente({ onNomeAtualizado, onContaExcluida }: Per
             setForm(paraForm(atualizado));
             onNomeAtualizado(atualizado.nome);
             setSucesso("Dados salvos com sucesso.");
-        } catch {
-            setErro("Não foi possível salvar. Tente novamente.");
+        } catch (err) {
+            setErro(mensagemDeErro(err, "Não foi possível salvar. Tente novamente."));
         } finally {
             setSalvando(false);
         }
@@ -161,12 +162,7 @@ export default function PerfilCliente({ onNomeAtualizado, onContaExcluida }: Per
             await excluirCliente();
             onContaExcluida();
         } catch (err) {
-            const comVinculos = err instanceof Error && err.message === "CONTA_COM_VINCULOS";
-            setErro(
-                comVinculos
-                    ? "Não é possível excluir uma conta com pedidos ou automóveis vinculados."
-                    : "Não foi possível excluir a conta. Tente novamente.",
-            );
+            setErro(mensagemDeErro(err, "Não foi possível excluir a conta. Tente novamente."));
         }
     }
 

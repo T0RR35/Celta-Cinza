@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Button from "../components/Button";
 import { atualizarAgente, buscarAgente } from "../services/perfilService";
+import { mensagemDeErro } from "../services/api";
 import type { DadosAgente } from "../types/Perfil";
 import "./Perfil.css";
 
@@ -29,7 +30,7 @@ export default function PerfilAgente({ onNomeAtualizado }: PerfilAgenteProps) {
                 setDados(d);
                 setNome(d.nome);
             })
-            .catch(() => ativo && setErro("Não foi possível carregar o seu perfil."))
+            .catch((err) => ativo && setErro(mensagemDeErro(err, "Não foi possível carregar o seu perfil.")))
             .finally(() => ativo && setCarregando(false));
         return () => {
             ativo = false;
@@ -66,8 +67,8 @@ export default function PerfilAgente({ onNomeAtualizado }: PerfilAgenteProps) {
             setNome(atualizado.nome);
             onNomeAtualizado(atualizado.nome);
             setSucesso("Dados salvos com sucesso.");
-        } catch {
-            setErro("Não foi possível salvar. Tente novamente.");
+        } catch (err) {
+            setErro(mensagemDeErro(err, "Não foi possível salvar. Tente novamente."));
         } finally {
             setSalvando(false);
         }

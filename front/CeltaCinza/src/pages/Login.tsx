@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { login } from "../services/authService";
+import { mensagemDeErro } from "../services/api";
 import type { UsuarioLogado } from "../types/UsuarioLogado";
 import "./Auth.css";
 
@@ -34,12 +35,7 @@ export default function Login({ onLogin }: LoginProps) {
             onLogin(resposta.usuario);
             navigate(resposta.usuario.perfil === "AGENTE" ? "/recebidos" : "/pedidos", { replace: true });
         } catch (err) {
-            const credenciaisInvalidas = err instanceof Error && err.message === "CREDENCIAIS_INVALIDAS";
-            setErro(
-                credenciaisInvalidas
-                    ? "Usuário ou senha inválidos."
-                    : "Não foi possível entrar. Tente novamente em instantes.",
-            );
+            setErro(mensagemDeErro(err, "Não foi possível entrar. Tente novamente em instantes."));
         } finally {
             setEnviando(false);
         }

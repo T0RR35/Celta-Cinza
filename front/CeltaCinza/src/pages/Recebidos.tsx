@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
 import { listarPedidosRecebidos, registrarParecer } from "../services/pedidoService";
+import { mensagemDeErro } from "../services/api";
 import type { PedidoRecebido } from "../types/Pedido";
 import formatarData from "../hooks/formatarData";
 import "./Recebidos.css";
@@ -31,7 +32,7 @@ export default function PedidosRecebidos() {
         let ativo = true;
         listarPedidosRecebidos()
             .then((dados) => ativo && setPedidos(dados))
-            .catch(() => ativo && setErro("Não foi possível carregar os pedidos recebidos."))
+            .catch((err) => ativo && setErro(mensagemDeErro(err, "Não foi possível carregar os pedidos recebidos.")))
             .finally(() => ativo && setCarregando(false));
         return () => {
             ativo = false;
@@ -68,8 +69,8 @@ export default function PedidosRecebidos() {
             );
             setSelecionadoId(null);
             setObservacoes("");
-        } catch {
-            setErro("Não foi possível registrar o parecer. Tente novamente.");
+        } catch (err) {
+            setErro(mensagemDeErro(err, "Não foi possível registrar o parecer. Tente novamente."));
         } finally {
             setSalvando(false);
         }
