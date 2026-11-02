@@ -1,0 +1,138 @@
+.perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.perfil h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #222;
+}
+
+.perfil h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #222;
+}
+
+.perfil form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.perfil__colunas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.perfil__card {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #222;
+}
+
+.perfil__card--estreito {
+    max-width: 520px;
+}
+
+.perfil__topo-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.perfil label {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.perfil .campo {
+    display: block;
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    font-family: inherit;
+    font-size: 15px;
+    color: #222;
+    background: #fff;
+    border: 1px solid #666;
+    border-radius: 6px;
+}
+
+.perfil .campo:focus-visible {
+    outline: 3px solid #888;
+    outline-offset: 1px;
+}
+
+.perfil .campo:disabled {
+    color: #555;
+    background: #ececea;
+}
+
+.perfil__rendimento {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.perfil__rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.perfil__acoes {
+    display: flex;
+    gap: 8px;
+}
+
+.perfil__aviso {
+    margin: 12px 0 0;
+    color: #555;
+}
+
+.perfil__erro,
+.perfil__sucesso {
+    margin: 0;
+    padding: 10px 14px;
+    color: #222;
+    border: 2px solid #222;
+    border-radius: 6px;
+}
+
+.perfil__erro {
+    background: #f2f2f0;
+}
+
+.perfil__sucesso {
+    background: #e6e6e2;
+}
+
+@media (max-width: 900px) {
+    .perfil__colunas {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .perfil__rendimento {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil__rodape {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

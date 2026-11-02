@@ -48,6 +48,13 @@ export default function App() {
     setUsuario(null);
   }
 
+  function handleNomeAtualizado(nome: string) {
+    if (!usuario) return;
+    const atualizado = { ...usuario, nome };
+    localStorage.setItem(USUARIO_KEY, JSON.stringify(atualizado));
+    setUsuario(atualizado);
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -71,7 +78,15 @@ export default function App() {
               <Route path="/pedidos" element={<MeusPedidos />} />
               <Route path="/pedidos/novo" element={<NovoPedido />} />
               <Route path="/pedidos/:id" element={<DetalhePedido />} />
-              <Route path="/perfil" element={<ClientePerfil />} />
+              <Route
+                path="/perfil"
+                element={
+                  <ClientePerfil
+                    onNomeAtualizado={handleNomeAtualizado}
+                    onContaExcluida={handleLogout}
+                  />
+                }
+              />
             </Route>
 
             {/* agente */}
@@ -79,7 +94,10 @@ export default function App() {
               <RotaProtegida usuario={usuario} perfilPermitido="AGENTE" />
             }>
               <Route path="/recebidos" element={<Recebidos />} />
-              <Route path="/perfil" element={<AgentePerfil />} />
+              <Route
+                path="/perfil"
+                element={<AgentePerfil onNomeAtualizado={handleNomeAtualizado} />}
+              />
             </Route>
           </Route>
         </Route>
