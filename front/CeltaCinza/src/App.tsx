@@ -7,6 +7,7 @@ import RotaProtegida from "./components/RotaProtegida";
 
 import MeusPedidos from "./pages/MeusPedidos";
 import DetalhePedido from "./pages/DetalhePedido";
+import EditarPedido from "./pages/EditarPedido";
 import NovoPedido from "./pages/NovoPedido";
 import Recebidos from "./pages/Recebidos";
 import Login from "./pages/Login";
@@ -92,6 +93,7 @@ export default function App() {
               <Route path="/pedidos" element={<MeusPedidos />} />
               <Route path="/pedidos/novo" element={<NovoPedido />} />
               <Route path="/pedidos/:id" element={<DetalhePedido />} />
+              <Route path="/pedidos/:id/editar" element={<EditarPedido />} />
             </Route>
 
             {/* agente */}
@@ -99,6 +101,7 @@ export default function App() {
               <RotaProtegida usuario={usuario} perfilPermitido="AGENTE" />
             }>
               <Route path="/recebidos" element={<Recebidos />} />
+              <Route path="/recebidos/:id/editar" element={<EditarPedido />} />
             </Route>
           </Route>
         </Route>

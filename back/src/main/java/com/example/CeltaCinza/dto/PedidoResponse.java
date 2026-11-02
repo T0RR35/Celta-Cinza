@@ -7,21 +7,25 @@ import java.time.LocalDate;
 
 public record PedidoResponse(
         Long id,
+        String clienteNome,
         AutomovelResponse automovel,
         LocalDate dataRetirada,
         LocalDate dataDevolucao,
         StatusPedido status,
-        boolean comCredito
+        boolean comCredito,
+        Long bancoId
 ) {
 
     public static PedidoResponse from(Pedido p) {
         return new PedidoResponse(
                 p.getId(),
+                p.getCliente().getNome(),
                 AutomovelResponse.from(p.getAutomovel()),
                 p.getDataRetirada(),
                 p.getDataDevolucao(),
                 p.getStatus(),
-                p.isComCredito()
+                p.isComCredito(),
+                p.getBancoSolicitado() == null ? null : p.getBancoSolicitado().getId()
         );
     }
 }

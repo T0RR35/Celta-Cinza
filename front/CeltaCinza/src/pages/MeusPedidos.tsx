@@ -4,13 +4,9 @@ import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
 import { cancelarPedido, listarPedidos } from "../services/pedidoService";
 import { mensagemDeErro } from "../services/api";
-import { STATUS_LABEL, type Pedido, type StatusPedido } from "../types/Pedido";
+import { STATUS_LABEL, permiteAlteracao, type Pedido, type StatusPedido } from "../types/Pedido";
 import "./MeusPedidos.css";
 import { formatarDia } from "../hooks/formatarData";
-
-function podeCancelar(status: StatusPedido) {
-    return status === "EM_ANALISE" || status === "APROVADO";
-}
 
 export default function MeusPedidos() {
     const navigate = useNavigate();
@@ -148,7 +144,15 @@ export default function MeusPedidos() {
                                                 <Button
                                                     variant="secondary"
                                                     size="sm"
-                                                    disabled={!podeCancelar(p.status)}
+                                                    disabled={!permiteAlteracao(p.status)}
+                                                    onClick={() => navigate(`/pedidos/${p.id}/editar`)}
+                                                >
+                                                    Modificar
+                                                </Button>
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    disabled={!permiteAlteracao(p.status)}
                                                     onClick={() => handleCancelar(p.id)}
                                                 >
                                                     Cancelar

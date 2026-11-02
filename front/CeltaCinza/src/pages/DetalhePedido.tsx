@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
 import { buscarPedido, cancelarPedido } from "../services/pedidoService";
 import { mensagemDeErro } from "../services/api";
-import type { Pedido, Proprietario, StatusPedido } from "../types/Pedido";
+import { permiteAlteracao, type Pedido, type Proprietario, type StatusPedido } from "../types/Pedido";
 import formatarData from "../hooks/formatarData";
 import "./DetalhePedido.css";
 
@@ -21,10 +21,6 @@ const DESCRICAO_STATUS: Record<StatusPedido, string> = {
     CONTRATO_ASSINADO: "Contrato assinado. O automóvel está liberado para retirada no período indicado.",
     CANCELADO: "Este pedido foi cancelado e não pode mais ser alterado.",
 };
-
-function podeCancelar(status: StatusPedido) {
-    return status === "EM_ANALISE" || status === "APROVADO";
-}
 
 function calcularDias(retirada: string, devolucao: string) {
     const inicio = new Date(`${retirada}T00:00:00`).getTime();
@@ -183,13 +179,18 @@ export default function DetalhePedido() {
             </div>
 
             <div className="detalhe__acoes">
-                {podeCancelar(pedido.status) ? (
-                    <Button variant="secondary" onClick={handleCancelar} disabled={cancelando}>
-                        {cancelando ? "Cancelando..." : "Cancelar pedido"}
-                    </Button>
+                {permiteAlteracao(pedido.status) ? (
+                    <>
+                        <Button onClick={() => navigate(`/pedidos/${pedido.id}/editar`)}>
+                            Modificar pedido
+                        </Button>
+                        <Button variant="secondary" onClick={handleCancelar} disabled={cancelando}>
+                            {cancelando ? "Cancelando..." : "Cancelar pedido"}
+                        </Button>
+                    </>
                 ) : (
                     <p className="detalhe__observacao">
-                        Este pedido não pode mais ser cancelado no status atual.
+                        Este pedido não pode mais ser alterado ou cancelado no status atual.
                     </p>
                 )}
             </div>

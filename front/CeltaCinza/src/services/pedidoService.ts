@@ -31,6 +31,16 @@ export async function criarPedido(dados: NovoPedidoDTO): Promise<Pedido> {
     return resposta.json();
 }
 
+export async function modificarPedido(id: number, dados: NovoPedidoDTO): Promise<Pedido> {
+    const resposta = await fetch(`${API_URL}/pedidos/${id}`, {
+        method: "PUT",
+        headers: headers(),
+        body: JSON.stringify(dados),
+    });
+    if (!resposta.ok) throw await erroDaResposta(resposta);
+    return resposta.json();
+}
+
 export async function listarBancos(): Promise<Banco[]> {
     const resposta = await fetch(`${API_URL}/bancos`, { headers: headers() });
     if (!resposta.ok) throw await erroDaResposta(resposta);

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
 import { listarPedidosRecebidos, registrarParecer } from "../services/pedidoService";
 import { mensagemDeErro } from "../services/api";
-import type { PedidoRecebido } from "../types/Pedido";
+import { permiteAlteracao, type PedidoRecebido } from "../types/Pedido";
 import formatarData from "../hooks/formatarData";
 import "./Recebidos.css";
 
@@ -16,6 +17,8 @@ function rendaTotal(p: PedidoRecebido) {
 }
 
 export default function PedidosRecebidos() {
+    const navigate = useNavigate();
+
     const [pedidos, setPedidos] = useState<PedidoRecebido[]>([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
@@ -223,6 +226,14 @@ export default function PedidosRecebidos() {
                         )}
 
                         <div className="recebidos__acoes">
+                            {permiteAlteracao(selecionado.status) && (
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => navigate(`/recebidos/${selecionado.id}/editar`)}
+                                >
+                                    Modificar pedido
+                                </Button>
+                            )}
                             {!jaAvaliado && (
                                 <Button onClick={handleRegistrar} disabled={salvando}>
                                     {salvando ? "Registrando..." : "Registrar parecer"}

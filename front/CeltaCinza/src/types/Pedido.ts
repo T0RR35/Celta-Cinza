@@ -15,6 +15,10 @@ export const STATUS_LABEL: Record<StatusPedido, string> = {
 
 export type Proprietario = "CLIENTE" | "EMPRESA" | "BANCO";
 
+export function permiteAlteracao(status: StatusPedido) {
+    return status === "EM_ANALISE" || status === "APROVADO";
+}
+
 export interface Automovel {
     marca: string;
     modelo: string;
@@ -26,11 +30,13 @@ export interface Automovel {
 
 export interface Pedido {
     id: number;
+    clienteNome: string;
     automovel: Automovel;
     dataRetirada: string;
     dataDevolucao: string;
     status: StatusPedido;
     comCredito: boolean;
+    bancoId: number | null;
 }
 
 export interface Banco {
