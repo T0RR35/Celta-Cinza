@@ -71,6 +71,21 @@ export default function App() {
               />
             }
           >
+            {/* perfil - comum aos dois perfis, escolhido pelo tipo de usuário */}
+            <Route
+              path="/perfil"
+              element={
+                usuario?.perfil === "AGENTE" ? (
+                  <AgentePerfil onNomeAtualizado={handleNomeAtualizado} />
+                ) : (
+                  <ClientePerfil
+                    onNomeAtualizado={handleNomeAtualizado}
+                    onContaExcluida={handleLogout}
+                  />
+                )
+              }
+            />
+
             {/* cliente */}
             <Route element={
               <RotaProtegida usuario={usuario} perfilPermitido="CLIENTE" />
@@ -78,15 +93,6 @@ export default function App() {
               <Route path="/pedidos" element={<MeusPedidos />} />
               <Route path="/pedidos/novo" element={<NovoPedido />} />
               <Route path="/pedidos/:id" element={<DetalhePedido />} />
-              <Route
-                path="/perfil"
-                element={
-                  <ClientePerfil
-                    onNomeAtualizado={handleNomeAtualizado}
-                    onContaExcluida={handleLogout}
-                  />
-                }
-              />
             </Route>
 
             {/* agente */}
@@ -94,10 +100,6 @@ export default function App() {
               <RotaProtegida usuario={usuario} perfilPermitido="AGENTE" />
             }>
               <Route path="/recebidos" element={<Recebidos />} />
-              <Route
-                path="/perfil"
-                element={<AgentePerfil onNomeAtualizado={handleNomeAtualizado} />}
-              />
             </Route>
           </Route>
         </Route>
