@@ -2,8 +2,7 @@ package com.celtacinza.security;
 
 import com.celtacinza.dto.Perfil;
 import com.celtacinza.model.Usuario;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.celtacinza.repository.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +24,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     protected void doFilterInternal(
@@ -80,11 +77,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private Usuario buscarPorEmail(String email) {
-        return entityManager
-                .createQuery("select u from Usuario u where u.email = :email", Usuario.class)
-                .setParameter("email", email)
-                .getResultStream()
-                .findFirst()
-                .orElse(null);
+        return usuarioRepository.findByEmail(email).orElse(null);
     }
 }

@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,7 +29,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
-        Usuario usuario = buscarPorEmail(request.usuario())
+        Usuario usuario = usuarioRepository.findByEmail(request.usuario())
                 .filter(u -> passwordEncoder.matches(request.senha(), u.getSenha()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário ou senha inválidos"));
 
@@ -46,6 +44,10 @@ public class AuthService {
         String senhaHash = passwordEncoder.encode(request.senha());
 
         if (request.tipoConta() == TipoConta.CLIENTE) {
+            if (vazio(request.cpf()) || vazio(request.rg()) || vazio(request.endereco()) || vazio(request.profissao())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "O cliente deve informar CPF, RG, endereço e profissão");
+            }
             if (clienteRepository.existsByCpf(request.cpf())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "CPF já cadastrado");
             }
@@ -68,7 +70,7 @@ public class AuthService {
         }
     }
 
-    private Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    private boolean vazio(String valor) {
+        return valor == null || valor.isBlank();
     }
 }
