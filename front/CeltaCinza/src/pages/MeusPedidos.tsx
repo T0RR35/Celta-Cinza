@@ -8,7 +8,7 @@ import { STATUS_LABEL, type Pedido, type StatusPedido } from "../types/Pedido";
 import "./MeusPedidos.css";
 import { formatarDia } from "../hooks/formatarData";
 
-function podeAlterar(status: StatusPedido) {
+function podeCancelar(status: StatusPedido) {
     return status === "EM_ANALISE" || status === "APROVADO";
 }
 
@@ -148,15 +148,7 @@ export default function MeusPedidos() {
                                                 <Button
                                                     variant="secondary"
                                                     size="sm"
-                                                    disabled={!podeAlterar(p.status)}
-                                                    onClick={() => navigate(`/pedidos/${p.id}/editar`)}
-                                                >
-                                                    Modificar
-                                                </Button>
-                                                <Button
-                                                    variant="secondary"
-                                                    size="sm"
-                                                    disabled={!podeAlterar(p.status)}
+                                                    disabled={!podeCancelar(p.status)}
                                                     onClick={() => handleCancelar(p.id)}
                                                 >
                                                     Cancelar

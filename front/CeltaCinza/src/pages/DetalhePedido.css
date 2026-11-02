@@ -1,0 +1,134 @@
+.detalhe {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detalhe h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #222;
+}
+
+.detalhe h2 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: #222;
+}
+
+.detalhe__topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.detalhe__subtitulo {
+    margin: 6px 0 0;
+    color: #555;
+}
+
+.detalhe__status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    color: #222;
+    background: #f2f2f0;
+    border: 1px solid #999;
+    border-radius: 8px;
+}
+
+.detalhe__status p {
+    margin: 0;
+}
+
+.detalhe__grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.detalhe__card {
+    padding: 20px;
+    color: #222;
+    background: #fff;
+    border: 1px solid #555;
+    border-radius: 8px;
+}
+
+.detalhe__card dl {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px 12px;
+    margin: 0;
+}
+
+.detalhe__card dt {
+    font-weight: 600;
+    color: #555;
+}
+
+.detalhe__card dd {
+    margin: 0;
+}
+
+.detalhe__observacao {
+    margin: 16px 0 0;
+    color: #555;
+}
+
+.detalhe__erro {
+    margin: 0;
+    padding: 10px 14px;
+    color: #222;
+    background: #fff;
+    border: 2px solid #222;
+    border-radius: 6px;
+}
+
+.detalhe__sucesso {
+    margin: 0;
+    padding: 10px 14px;
+    color: #222;
+    background: #d9d9d5;
+    border: 1px solid #555;
+    border-radius: 6px;
+}
+
+.detalhe__aviso {
+    margin: 0;
+    padding: 24px 10px;
+    text-align: center;
+    color: #555;
+}
+
+.detalhe__acoes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detalhe__acoes .detalhe__observacao {
+    margin: 0;
+}
+
+@media (max-width: 760px) {
+    .detalhe__topo {
+        flex-direction: column;
+    }
+
+    .detalhe__status {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detalhe__card dl {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+
+    .detalhe__card dd {
+        margin-bottom: 8px;
+    }
+}

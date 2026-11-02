@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
 import { listarPedidosRecebidos, registrarParecer } from "../services/pedidoService";
@@ -17,8 +16,6 @@ function rendaTotal(p: PedidoRecebido) {
 }
 
 export default function PedidosRecebidos() {
-    const navigate = useNavigate();
-
     const [pedidos, setPedidos] = useState<PedidoRecebido[]>([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
@@ -231,9 +228,6 @@ export default function PedidosRecebidos() {
                                     {salvando ? "Registrando..." : "Registrar parecer"}
                                 </Button>
                             )}
-                            <Button variant="secondary" onClick={() => navigate(`/recebidos/${selecionado.id}/editar`)}>
-                                Modificar pedido
-                            </Button>
                         </div>
                     </>
                 ) : (

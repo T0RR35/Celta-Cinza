@@ -7,6 +7,12 @@ export async function listarPedidos(): Promise<Pedido[]> {
     return resposta.json();
 }
 
+export async function buscarPedido(id: number): Promise<Pedido> {
+    const resposta = await fetch(`${API_URL}/pedidos/${id}`, { headers: headers() });
+    if (!resposta.ok) throw await erroDaResposta(resposta);
+    return resposta.json();
+}
+
 export async function cancelarPedido(id: number): Promise<void> {
     const resposta = await fetch(`${API_URL}/pedidos/${id}/cancelar`, {
         method: "PATCH",
