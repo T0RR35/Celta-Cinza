@@ -55,8 +55,8 @@ public class ClienteService {
         clienteRepository.delete(cliente);
     }
 
-    private Cliente obter(String usuario) {
-        return clienteRepository.findByUsuario(usuario)
+    private Cliente obter(String email) {
+        return clienteRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
     }
 }

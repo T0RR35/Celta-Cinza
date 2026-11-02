@@ -1,6 +1,6 @@
 import type { CadastroDTO, RespostaLogin } from "../types/Auth";
+import { API_URL } from "./api";
 
-const API_URL = import.meta.env.VITE_API_URL;
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
 export async function login(usuario: string, senha: string): Promise<RespostaLogin> {

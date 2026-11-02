@@ -39,7 +39,7 @@ public class AuthService {
     }
 
     public void cadastrar(CadastroRequest request) {
-        if (buscarPorEmail(request.usuario()).isPresent()) {
+        if (usuarioRepository.existsByEmail(request.usuario())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Esse usuário já está em uso");
         }
 
@@ -69,8 +69,6 @@ public class AuthService {
     }
 
     private Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findAll().stream()
-                .filter(u -> email.equals(u.getEmail()))
-                .findFirst();
+        return usuarioRepository.findByEmail(email);
     }
 }

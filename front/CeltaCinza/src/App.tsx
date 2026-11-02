@@ -14,18 +14,44 @@ import Cadastro from "./pages/Cadastro";
 import ClientePerfil from "./pages/ClientePerfil";
 import AgentePerfil from "./pages/AgentePerfil";
 
+const TOKEN_KEY = "token";
+const USUARIO_KEY = "usuario";
+
+function lerUsuarioSalvo(): UsuarioLogado | null {
+  const token = localStorage.getItem(TOKEN_KEY);
+  const salvo = localStorage.getItem(USUARIO_KEY);
+  if (!token || !salvo) return null;
+
+  try {
+    const usuario = JSON.parse(salvo) as UsuarioLogado;
+    if (usuario?.perfil === "CLIENTE" || usuario?.perfil === "AGENTE") {
+      return usuario;
+    }
+  } catch {
+  }
+  return null;
+}
+
 export default function App() {
-  const [usuario, setUsuario] = useState<UsuarioLogado | null>({
-    nome: "cliente",
-    perfil: "CLIENTE",
-  });
+  const [usuario, setUsuario] = useState<UsuarioLogado | null>(lerUsuarioSalvo);
 
   const inicio = usuario?.perfil === "AGENTE" ? "/recebidos" : "/pedidos";
+
+  function handleLogin(usuarioLogado: UsuarioLogado) {
+    localStorage.setItem(USUARIO_KEY, JSON.stringify(usuarioLogado));
+    setUsuario(usuarioLogado);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USUARIO_KEY);
+    setUsuario(null);
+  }
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/cadastro" element={<Cadastro />} />
 
         {/* ve se ta logado */}
@@ -33,8 +59,8 @@ export default function App() {
           <Route
             element={
               <Layout
-                usuario={usuario!}
-                onLogout={() => setUsuario(null)}
+                usuario={usuario as UsuarioLogado}
+                onLogout={handleLogout}
               />
             }
           >

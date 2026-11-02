@@ -1,14 +1,5 @@
 import type { Banco, NovoPedidoDTO, ParecerDTO, Pedido, PedidoRecebido } from "../types/Pedido";
-
-const API_URL = import.meta.env.VITE_API_URL;
-
-function headers(): HeadersInit {
-    const token = localStorage.getItem("token");
-    return {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-}
+import { API_URL, authHeaders as headers } from "./api";
 
 export async function listarPedidos(): Promise<Pedido[]> {
     const resposta = await fetch(`${API_URL}/pedidos`, { headers: headers() });

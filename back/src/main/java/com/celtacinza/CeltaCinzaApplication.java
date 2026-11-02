@@ -1,4 +1,4 @@
-package com.example.CeltaCinza;
+package com.celtacinza;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

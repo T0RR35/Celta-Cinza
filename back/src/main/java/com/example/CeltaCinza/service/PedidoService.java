@@ -70,7 +70,7 @@ public class PedidoService {
     }
 
     public void registrarParecer(Long id, String usuario, ParecerRequest request) {
-        Agente agente = agenteRepository.findByUsuario(usuario)
+        Agente agente = agenteRepository.findByEmail(usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas agentes podem avaliar pedidos"));
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado"));
@@ -139,7 +139,7 @@ public class PedidoService {
     }
 
     private Cliente obterCliente(String usuario) {
-        return clienteRepository.findByUsuario(usuario)
+        return clienteRepository.findByEmail(usuario)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Apenas clientes podem acessar seus pedidos"));
     }
 
