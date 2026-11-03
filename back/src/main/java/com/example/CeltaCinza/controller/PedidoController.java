@@ -1,5 +1,6 @@
 package com.celtacinza.controller;
 
+import com.celtacinza.dto.ExecutarContratoRequest;
 import com.celtacinza.dto.NovoPedidoRequest;
 import com.celtacinza.dto.ParecerRequest;
 import com.celtacinza.dto.PedidoRecebidoResponse;
@@ -58,5 +59,11 @@ public class PedidoController {
     public void registrarParecer(@PathVariable Long id, Principal principal,
             @Valid @RequestBody ParecerRequest request) {
         pedidoService.registrarParecer(id, principal.getName(), request);
+    }
+
+    @PostMapping("/{id}/contrato")
+    public PedidoRecebidoResponse executarContrato(@PathVariable Long id, Principal principal,
+            @Valid @RequestBody(required = false) ExecutarContratoRequest request) {
+        return pedidoService.executarContrato(id, principal.getName(), request);
     }
 }

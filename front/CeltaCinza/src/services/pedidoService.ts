@@ -1,4 +1,11 @@
-import type { Banco, NovoPedidoDTO, ParecerDTO, Pedido, PedidoRecebido } from "../types/Pedido";
+import type {
+    Banco,
+    ExecutarContratoDTO,
+    NovoPedidoDTO,
+    ParecerDTO,
+    Pedido,
+    PedidoRecebido,
+} from "../types/Pedido";
 import { API_URL, authHeaders as headers, erroDaResposta } from "./api";
 
 export async function listarPedidos(): Promise<Pedido[]> {
@@ -60,4 +67,14 @@ export async function registrarParecer(id: number, parecer: ParecerDTO): Promise
         body: JSON.stringify(parecer),
     });
     if (!resposta.ok) throw await erroDaResposta(resposta);
+}
+
+export async function executarContrato(id: number, dados: ExecutarContratoDTO): Promise<PedidoRecebido> {
+    const resposta = await fetch(`${API_URL}/pedidos/${id}/contrato`, {
+        method: "POST",
+        headers: headers(),
+        body: JSON.stringify(dados),
+    });
+    if (!resposta.ok) throw await erroDaResposta(resposta);
+    return resposta.json();
 }

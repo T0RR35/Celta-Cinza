@@ -54,6 +54,7 @@ public class GlobalExceptionHandler {
             Map.entry("bancoId", "Banco"),
             Map.entry("positivo", "Parecer"),
             Map.entry("observacoes", "Observações"),
+            Map.entry("prazoMeses", "Prazo em meses"),
             Map.entry("entidadeEmpregadora", "Entidade empregadora"),
             Map.entry("valor", "Valor"),
             Map.entry("rendimentos", "Rendimentos"),

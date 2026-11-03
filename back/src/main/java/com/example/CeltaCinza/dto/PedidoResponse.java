@@ -13,7 +13,8 @@ public record PedidoResponse(
         LocalDate dataDevolucao,
         StatusPedido status,
         boolean comCredito,
-        Long bancoId
+        Long bancoId,
+        ContratoResponse contrato
 ) {
 
     public static PedidoResponse from(Pedido p) {
@@ -25,7 +26,8 @@ public record PedidoResponse(
                 p.getDataDevolucao(),
                 p.getStatus(),
                 p.isComCredito(),
-                p.getBancoSolicitado() == null ? null : p.getBancoSolicitado().getId()
+                p.getBancoSolicitado() == null ? null : p.getBancoSolicitado().getId(),
+                ContratoResponse.from(p.getContrato())
         );
     }
 }

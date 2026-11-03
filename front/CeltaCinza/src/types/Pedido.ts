@@ -28,6 +28,20 @@ export interface Automovel {
     proprietario: Proprietario;
 }
 
+export interface ContratoCredito {
+    id: number;
+    valor: number;
+    prazoMeses: number;
+    bancoId: number;
+    bancoNome: string;
+}
+
+export interface Contrato {
+    id: number;
+    dataAssinatura: string;
+    contratoCredito: ContratoCredito | null;
+}
+
 export interface Pedido {
     id: number;
     clienteNome: string;
@@ -37,6 +51,7 @@ export interface Pedido {
     status: StatusPedido;
     comCredito: boolean;
     bancoId: number | null;
+    contrato: Contrato | null;
 }
 
 export interface Banco {
@@ -67,12 +82,19 @@ export interface PedidoRecebido {
     };
     automovel: Automovel;
     comCredito: boolean;
+    banco: Banco | null;
     dataRetirada: string;
     dataDevolucao: string;
     status: StatusPedido;
+    contrato: Contrato | null;
 }
 
 export interface ParecerDTO {
     positivo: boolean;
     observacoes: string;
+}
+
+export interface ExecutarContratoDTO {
+    valor: number | null;
+    prazoMeses: number | null;
 }

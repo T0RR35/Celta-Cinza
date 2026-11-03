@@ -176,6 +176,31 @@ export default function DetalhePedido() {
                             : "Este pedido foi feito sem solicitação de crédito."}
                     </p>
                 </div>
+
+                {pedido.contrato && (
+                    <div className="detalhe__card">
+                        <h2>Contrato</h2>
+                        <dl>
+                            <dt>Assinado em</dt>
+                            <dd>{formatarData(pedido.contrato.dataAssinatura)}</dd>
+                            {pedido.contrato.contratoCredito && (
+                                <>
+                                    <dt>Valor do crédito</dt>
+                                    <dd>
+                                        {new Intl.NumberFormat("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                        }).format(pedido.contrato.contratoCredito.valor)}
+                                    </dd>
+                                    <dt>Prazo</dt>
+                                    <dd>{pedido.contrato.contratoCredito.prazoMeses} meses</dd>
+                                    <dt>Banco</dt>
+                                    <dd>{pedido.contrato.contratoCredito.bancoNome}</dd>
+                                </>
+                            )}
+                        </dl>
+                    </div>
+                )}
             </div>
 
             <div className="detalhe__acoes">

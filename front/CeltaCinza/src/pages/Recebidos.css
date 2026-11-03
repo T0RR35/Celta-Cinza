@@ -76,6 +76,47 @@
     color: #222;
 }
 
+.recebidos__sucesso {
+    margin: 16px 0 0;
+    padding: 10px 14px;
+    color: #222;
+    background: #e6e6e2;
+    border: 1px solid #555;
+    border-radius: 6px;
+}
+
+.recebidos__credito {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.recebidos__contrato {
+    margin-top: 20px;
+    padding: 16px 20px;
+    color: #222;
+    background: #f2f2f0;
+    border: 1px solid #999;
+    border-radius: 6px;
+}
+
+.recebidos__contrato dl {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 8px 12px;
+    margin: 0;
+}
+
+.recebidos__contrato dt {
+    font-weight: 600;
+    color: #555;
+}
+
+.recebidos__contrato dd {
+    margin: 0;
+}
+
 .recebidos__dados {
     display: grid;
     grid-template-columns: 1.3fr 1fr;
@@ -180,7 +221,9 @@
 }
 
 @media (max-width: 760px) {
-    .recebidos__dados {
+    .recebidos__dados,
+    .recebidos__credito,
+    .recebidos__contrato dl {
         grid-template-columns: 1fr;
     }
 
@@ -189,7 +232,8 @@
         gap: 2px;
     }
 
-    .recebidos__dados dd {
+    .recebidos__dados dd,
+    .recebidos__contrato dd {
         margin-bottom: 8px;
     }
 }

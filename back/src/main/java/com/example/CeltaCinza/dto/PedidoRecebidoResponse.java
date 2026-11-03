@@ -10,9 +10,11 @@ public record PedidoRecebidoResponse(
         ClienteResponse cliente,
         AutomovelResponse automovel,
         boolean comCredito,
+        BancoResponse banco,
         LocalDate dataRetirada,
         LocalDate dataDevolucao,
-        StatusPedido status
+        StatusPedido status,
+        ContratoResponse contrato
 ) {
 
     public static PedidoRecebidoResponse from(Pedido p) {
@@ -21,9 +23,11 @@ public record PedidoRecebidoResponse(
                 ClienteResponse.from(p.getCliente()),
                 AutomovelResponse.from(p.getAutomovel()),
                 p.isComCredito(),
+                p.getBancoSolicitado() == null ? null : BancoResponse.from(p.getBancoSolicitado()),
                 p.getDataRetirada(),
                 p.getDataDevolucao(),
-                p.getStatus()
+                p.getStatus(),
+                ContratoResponse.from(p.getContrato())
         );
     }
 }

@@ -106,6 +106,58 @@ public class PedidoService {
         pedido.setStatus(positivo ? StatusPedido.APROVADO : StatusPedido.REPROVADO);
     }
 
+    public PedidoRecebidoResponse executarContrato(Long id, String usuario, ExecutarContratoRequest request) {
+        Agente agente = agenteRepository.findByEmail(usuario)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Apenas agentes podem executar contratos."));
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pedido não encontrado."));
+
+        if (pedido.getStatus() != StatusPedido.APROVADO) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Só é possível executar o contrato de um pedido aprovado.");
+        }
+        if (pedido.getContrato() != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Este pedido já possui um contrato executado.");
+        }
+        if (pedido.getParecer() == null || !pedido.getParecer().isPositivo()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "O pedido precisa ter um parecer financeiro positivo para ter o contrato executado.");
+        }
+
+        ContratoAluguel contrato = new ContratoAluguel();
+        contrato.setPedido(pedido);
+        contrato.setDataAssinatura(LocalDate.now());
+
+        if (pedido.isComCredito()) {
+            Agente banco = pedido.getBancoSolicitado();
+            if (!agente.isBanco() || !agente.getId().equals(banco.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Apenas o banco selecionado no pedido pode executar o contrato de crédito.");
+            }
+            if (request == null || request.valor() == null || request.prazoMeses() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Informe o valor e o prazo do contrato de crédito.");
+            }
+
+            ContratoCredito credito = new ContratoCredito();
+            credito.setValor(request.valor());
+            credito.setPrazoMeses(request.prazoMeses());
+            credito.setBanco(banco);
+            contrato.setContratoCredito(credito);
+            // Contrato de crédito: o banco financiador passa a ser o proprietário do automóvel.
+            pedido.getAutomovel().setProprietario(banco);
+        }
+        // Contrato de aluguel sem crédito: mantém o proprietário informado no pedido
+        // (cliente, empresa ou banco).
+
+        pedido.setContrato(contrato);
+        pedido.setStatus(StatusPedido.CONTRATO_ASSINADO);
+        pedidoRepository.saveAndFlush(pedido);
+
+        return PedidoRecebidoResponse.from(pedido);
+    }
+
     private void preencher(Pedido pedido, Cliente cliente, NovoPedidoRequest request) {
         pedido.setDataRetirada(request.dataRetirada());
         pedido.setDataDevolucao(request.dataDevolucao());

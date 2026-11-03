@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import StatusBadge from "../components/StatusBadge";
-import { listarPedidosRecebidos, registrarParecer } from "../services/pedidoService";
+import { executarContrato, listarPedidosRecebidos, registrarParecer } from "../services/pedidoService";
 import { mensagemDeErro } from "../services/api";
 import { permiteAlteracao, type PedidoRecebido } from "../types/Pedido";
 import formatarData from "../hooks/formatarData";
@@ -22,11 +22,15 @@ export default function PedidosRecebidos() {
     const [pedidos, setPedidos] = useState<PedidoRecebido[]>([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
+    const [sucesso, setSucesso] = useState("");
 
     const [selecionadoId, setSelecionadoId] = useState<number | null>(null);
     const [parecer, setParecer] = useState<Parecer>("POSITIVO");
     const [observacoes, setObservacoes] = useState("");
     const [salvando, setSalvando] = useState(false);
+    const [valorCredito, setValorCredito] = useState("");
+    const [prazoCredito, setPrazoCredito] = useState("");
+    const [executando, setExecutando] = useState(false);
 
     useEffect(() => {
         let ativo = true;
@@ -41,12 +45,17 @@ export default function PedidosRecebidos() {
 
     const selecionado = pedidos.find((p) => p.id === selecionadoId) ?? null;
     const jaAvaliado = selecionado !== null && selecionado.status !== "EM_ANALISE";
+    const podeExecutarContrato =
+        selecionado !== null && selecionado.status === "APROVADO" && selecionado.contrato === null;
 
     function avaliar(id: number) {
         setSelecionadoId(id);
         setParecer("POSITIVO");
         setObservacoes("");
+        setValorCredito("");
+        setPrazoCredito("");
         setErro("");
+        setSucesso("");
     }
 
     async function handleRegistrar() {
@@ -58,6 +67,7 @@ export default function PedidosRecebidos() {
 
         setSalvando(true);
         setErro("");
+        setSucesso("");
         try {
             await registrarParecer(selecionado.id, {
                 positivo: parecer === "POSITIVO",
@@ -67,12 +77,49 @@ export default function PedidosRecebidos() {
             setPedidos((atual) =>
                 atual.map((p) => (p.id === selecionado.id ? { ...p, status: novoStatus } : p)),
             );
-            setSelecionadoId(null);
             setObservacoes("");
+            setSucesso(
+                parecer === "POSITIVO"
+                    ? "Parecer positivo registrado. O contrato já pode ser executado."
+                    : "Parecer negativo registrado.",
+            );
         } catch (err) {
             setErro(mensagemDeErro(err, "Não foi possível registrar o parecer. Tente novamente."));
         } finally {
             setSalvando(false);
+        }
+    }
+
+    async function handleExecutarContrato() {
+        if (!selecionado) return;
+
+        let valor: number | null = null;
+        let prazoMeses: number | null = null;
+
+        if (selecionado.comCredito) {
+            valor = Number(valorCredito.replace(",", "."));
+            prazoMeses = Number(prazoCredito);
+            if (!valorCredito.trim() || !Number.isFinite(valor) || valor <= 0) {
+                setErro("Informe um valor válido para o contrato de crédito.");
+                return;
+            }
+            if (!Number.isInteger(prazoMeses) || prazoMeses <= 0) {
+                setErro("Informe um prazo válido, em meses, para o contrato de crédito.");
+                return;
+            }
+        }
+
+        setExecutando(true);
+        setErro("");
+        setSucesso("");
+        try {
+            const atualizado = await executarContrato(selecionado.id, { valor, prazoMeses });
+            setPedidos((atual) => atual.map((p) => (p.id === atualizado.id ? atualizado : p)));
+            setSucesso("Contrato executado com sucesso. O aluguel foi formalizado.");
+        } catch (err) {
+            setErro(mensagemDeErro(err, "Não foi possível executar o contrato. Tente novamente."));
+        } finally {
+            setExecutando(false);
         }
     }
 
@@ -137,7 +184,10 @@ export default function PedidosRecebidos() {
                 {selecionado ? (
                     <>
                         <h2>
-                            Avaliação financeira · Pedido #{String(selecionado.id).padStart(4, "0")}
+                            {selecionado.status === "APROVADO" || selecionado.status === "CONTRATO_ASSINADO"
+                                ? "Contrato de aluguel"
+                                : "Avaliação financeira"}{" "}
+                            · Pedido #{String(selecionado.id).padStart(4, "0")}
                         </h2>
 
                         <div className="recebidos__dados">
@@ -159,6 +209,12 @@ export default function PedidosRecebidos() {
                                 <dd>
                                     {formatarData(selecionado.dataRetirada)} a {formatarData(selecionado.dataDevolucao)}
                                 </dd>
+                                <dt>Crédito</dt>
+                                <dd>
+                                    {selecionado.comCredito
+                                        ? `Sim · ${selecionado.banco?.nome ?? "Banco não informado"}`
+                                        : "Não"}
+                                </dd>
                             </dl>
 
                             <div>
@@ -178,12 +234,13 @@ export default function PedidosRecebidos() {
                             </div>
                         </div>
 
-                        {jaAvaliado ? (
-                            <p className="recebidos__aviso">
-                                Este pedido já foi avaliado (<StatusBadge status={selecionado.status} />) e não aceita
-                                novo parecer.
+                        {sucesso && (
+                            <p className="recebidos__sucesso" role="status">
+                                {sucesso}
                             </p>
-                        ) : (
+                        )}
+
+                        {selecionado.status === "EM_ANALISE" ? (
                             <>
                                 <fieldset className="recebidos__parecer">
                                     <legend className="sr-only">Parecer financeiro</legend>
@@ -216,13 +273,87 @@ export default function PedidosRecebidos() {
                                     value={observacoes}
                                     onChange={(e) => setObservacoes(e.target.value)}
                                 />
+                            </>
+                        ) : selecionado.status === "APROVADO" ? (
+                            <>
+                                <p className="recebidos__aviso">
+                                    O parecer financeiro foi positivo. Execute o contrato para formalizar o aluguel.
+                                    {selecionado.comCredito
+                                        ? " Como o pedido possui crédito, informe os dados do contrato de crédito."
+                                        : " Este contrato não possui crédito associado."}
+                                </p>
 
-                                {erro && (
-                                    <p className="recebidos__erro" role="alert">
-                                        {erro}
-                                    </p>
+                                {selecionado.comCredito && (
+                                    <div className="recebidos__credito">
+                                        <div>
+                                            <label htmlFor="valorCredito" className="recebidos__rotulo">
+                                                Valor do crédito (R$)
+                                            </label>
+                                            <input
+                                                id="valorCredito"
+                                                className="campo"
+                                                type="number"
+                                                min="0.01"
+                                                step="0.01"
+                                                value={valorCredito}
+                                                onChange={(e) => setValorCredito(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="prazoCredito" className="recebidos__rotulo">
+                                                Prazo (meses)
+                                            </label>
+                                            <input
+                                                id="prazoCredito"
+                                                className="campo"
+                                                type="number"
+                                                min="1"
+                                                max="600"
+                                                step="1"
+                                                value={prazoCredito}
+                                                onChange={(e) => setPrazoCredito(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
                                 )}
                             </>
+                        ) : selecionado.status === "CONTRATO_ASSINADO" && selecionado.contrato ? (
+                            <div className="recebidos__contrato">
+                                <h3>Contrato executado</h3>
+                                <dl>
+                                    <dt>Assinado em</dt>
+                                    <dd>{formatarData(selecionado.contrato.dataAssinatura)}</dd>
+                                    <dt>Proprietário do automóvel</dt>
+                                    <dd>
+                                        {selecionado.automovel.proprietario === "BANCO"
+                                            ? "Banco"
+                                            : selecionado.automovel.proprietario === "EMPRESA"
+                                              ? "Empresa"
+                                              : "Cliente"}
+                                    </dd>
+                                    {selecionado.contrato.contratoCredito && (
+                                        <>
+                                            <dt>Crédito</dt>
+                                            <dd>
+                                                {moeda.format(selecionado.contrato.contratoCredito.valor)} em{" "}
+                                                {selecionado.contrato.contratoCredito.prazoMeses} meses ·{" "}
+                                                {selecionado.contrato.contratoCredito.bancoNome}
+                                            </dd>
+                                        </>
+                                    )}
+                                </dl>
+                            </div>
+                        ) : (
+                            <p className="recebidos__aviso">
+                                Este pedido está com status <StatusBadge status={selecionado.status} /> e não aceita
+                                novas ações de contrato.
+                            </p>
+                        )}
+
+                        {erro && (
+                            <p className="recebidos__erro" role="alert">
+                                {erro}
+                            </p>
                         )}
 
                         <div className="recebidos__acoes">
@@ -237,6 +368,11 @@ export default function PedidosRecebidos() {
                             {!jaAvaliado && (
                                 <Button onClick={handleRegistrar} disabled={salvando}>
                                     {salvando ? "Registrando..." : "Registrar parecer"}
+                                </Button>
+                            )}
+                            {podeExecutarContrato && (
+                                <Button onClick={handleExecutarContrato} disabled={executando}>
+                                    {executando ? "Executando..." : "Executar contrato"}
                                 </Button>
                             )}
                         </div>
