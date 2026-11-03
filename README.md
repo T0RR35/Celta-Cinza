@@ -22,9 +22,9 @@
 
 ## 🚧 Status do Projeto
 
-![Java](https://img.shields.io/badge/Java-25-007ec6?style=for-the-badge&logo=openjdk&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.x-007ec6?style=for-the-badge&logo=springboot&logoColor=white) ![Maven](https://img.shields.io/badge/Maven-build-007ec6?style=for-the-badge&logo=apachemaven&logoColor=white) ![React](https://img.shields.io/badge/React-Vite-007ec6?style=for-the-badge&logo=react&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-007ec6?style=for-the-badge&logo=supabase&logoColor=white)
+![Java](https://img.shields.io/badge/Java-25-007ec6?style=for-the-badge&logo=openjdk&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.x-007ec6?style=for-the-badge&logo=springboot&logoColor=white) ![Maven](https://img.shields.io/badge/Maven-build-007ec6?style=for-the-badge&logo=apachemaven&logoColor=white) ![React](https://img.shields.io/badge/React-Vite-007ec6?style=for-the-badge&logo=react&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-007ec6?style=for-the-badge&logo=supabase&logoColor=white)
 
-🛠️ **Em desenvolvimento.** Modelagem e front-end em andamento; back-end e integração com o banco de dados nas próximas etapas.
+🛠️ **Em desenvolvimento.** Back-end (Spring Boot) e integração com o Supabase concluídos; fluxo de pedidos, análise financeira e execução de contratos funcionando. Restam ajustes de front-end, testes automatizados e documentação visual.
 
 ---
 
@@ -93,10 +93,11 @@ O projeto nasceu como trabalho acadêmico (DIAW, PUC Minas) e serve também como
 - 🔐 **Autenticação:** cadastro e login obrigatórios, com perfis de Cliente e Agente (Empresa ou Banco).
 - 👤 **CRUD de cliente:** identificação (RG, CPF, nome, endereço), profissão e até 3 rendimentos com entidade empregadora.
 - 📝 **Pedidos de aluguel:** o cliente cria, consulta, modifica e cancela pedidos e acompanha o status.
-- 🚘 **Automóveis:** registro de matrícula, ano, marca, modelo e placa, com proprietário cliente, empresa ou banco.
-- 🏦 **Contrato de crédito:** associação opcional a um banco agente.
+- 🚘 **Automóveis:** registro de matrícula, ano, marca, modelo e placa. O modelo admite proprietário cliente, empresa ou banco; nesta etapa, a criação de pedidos aceita o automóvel do próprio cliente.
+- 🏦 **Contrato de crédito:** associação opcional a um banco agente, com valor e prazo informados no momento da execução do contrato.
 - ✅ **Avaliação financeira:** parecer positivo ou negativo do agente sobre cada pedido.
-- 📄 **Execução de contrato:** pedidos aprovados viram contrato de aluguel.
+- 📄 **Execução de contrato:** após parecer positivo, o agente executa o contrato do pedido aprovado. Em pedidos com crédito, somente o banco selecionado pode executar.
+- 🚗 **Propriedade do automóvel:** em contrato com crédito, o banco financiador passa a ser o proprietário; sem crédito, o proprietário informado no pedido é mantido (cliente, empresa ou banco).
 
 ---
 
@@ -111,7 +112,7 @@ O projeto nasceu como trabalho acadêmico (DIAW, PUC Minas) e serve também como
 ### 🖥️ Back-end
 
 * **Linguagem:** Java (JDK 25)
-* **Framework:** Spring Boot 4.0.x (arquitetura MVC)
+* **Framework:** Spring Boot 4.1.x (arquitetura MVC)
 * **Build e dependências:** Apache Maven
 * **ORM:** Spring Data JPA (Hibernate)
 * **Autenticação:** Spring Security com JWT
@@ -135,14 +136,16 @@ O sistema é dividido em dois subsistemas: gestão de pedidos e contratos, e con
 
 Ciclo de vida do pedido: **Em análise → Aprovado ou Reprovado → Contrato executado**, com **Cancelado** possível até a execução do contrato.
 
+Na execução, o pedido aprovado gera um `ContratoAluguel` e, quando há crédito, um `ContratoCredito` vinculado ao banco escolhido. A operação é restrita a agentes e, no caso de contrato de crédito, ao banco selecionado no pedido.
+
 ### Diagramas
 
 | Diagrama | Arquivo |
 | :---: | :---: |
-| **Casos de Uso** | _em breve_ |
-| **Classes** | _em breve_ |
-| **Pacotes (Visão Lógica)** | _em breve_ |
-| **Histórias do Usuário** | _em breve_ |
+| **Casos de Uso** | [docs/Modelagem.pdf](./docs/Modelagem.pdf) |
+| **Classes** | [docs/Modelagem.pdf](./docs/Modelagem.pdf) |
+| **Pacotes (Visão Lógica)** | [docs/Modelagem.pdf](./docs/Modelagem.pdf) |
+| **Histórias do Usuário** | [docs/Modelagem.pdf](./docs/Modelagem.pdf) |
 | **Wireframes** | [docs/wireframes](./docs/wireframes) |
 
 ---
@@ -163,7 +166,7 @@ Ciclo de vida do pedido: **Em análise → Aprovado ou Reprovado → Contrato ex
 
 #### Back-end (Spring Boot)
 
-Copie `backend/.env.example` e preencha com os dados do seu projeto Supabase.
+Copie `back/.env.example` e preencha com os dados do seu projeto Supabase.
 
 | Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
@@ -176,7 +179,7 @@ Copie `backend/.env.example` e preencha com os dados do seu projeto Supabase.
 
 #### Front-end (React, Vite)
 
-Crie `frontend/.env` com o prefixo `VITE_`.
+Crie `front/CeltaCinza/.env` com o prefixo `VITE_`.
 
 | Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
@@ -194,17 +197,15 @@ cd celtacinza
 #### Front-end (React)
 
 ```bash
-cd frontend
+cd front/CeltaCinza
 npm install
-cd ..
 ```
 
 #### Back-end (Spring Boot)
 
 ```bash
-cd backend
+cd back
 ./mvnw clean install
-cd ..
 ```
 
 ---
@@ -224,7 +225,7 @@ Execute em **dois terminais separados**.
 #### Terminal 1: Back-end (Spring Boot)
 
 ```bash
-cd backend
+cd back
 ./mvnw spring-boot:run
 ```
 🚀 *O back-end estará disponível em **http://localhost:8080**.*
@@ -232,7 +233,7 @@ cd backend
 #### Terminal 2: Front-end (React, Vite)
 
 ```bash
-cd frontend
+cd front/CeltaCinza
 npm run dev
 ```
 🎨 *O front-end estará disponível em **http://localhost:5173**.*
@@ -254,16 +255,19 @@ _A definir._
 │
 ├── /docs                        # 📚 Modelagem: casos de uso, histórias, classes, pacotes e wireframes.
 │
-├── /frontend                    # 📁 Aplicação React + Vite
-│   ├── .env.example
-│   └── /src
-│       ├── /components          # 🧱 Componentes reutilizáveis.
-│       ├── /pages               # 📄 Telas da aplicação.
-│       ├── /services            # 🔌 Chamadas à API.
-│       ├── /context             # 🔐 Sessão do usuário.
-│       └── /routes              # 🧭 Rotas protegidas.
+├── /front                       # 📁 Aplicação React + Vite
+│   └── /CeltaCinza
+│       ├── .env.example
+│       ├── package.json
+│       └── /src
+│           ├── /assets          # 🖼️ Imagens e recursos estáticos.
+│           ├── /components      # 🧱 Componentes reutilizáveis.
+│           ├── /hooks           # 🪝 Hooks compartilhados.
+│           ├── /pages           # 📄 Telas da aplicação.
+│           ├── /services        # 🔌 Chamadas à API.
+│           └── /types           # 🏷️ Tipos e contratos de dados.
 │
-└── /backend                     # 📁 Aplicação Spring Boot
+└── /back                        # 📁 Aplicação Spring Boot
     ├── .env.example
     ├── pom.xml
     └── /src/main/java/.../
@@ -272,7 +276,9 @@ _A definir._
         ├── /repository          # 🗄️ Acesso a dados (JPA).
         ├── /model               # 🧬 Entidades e enums.
         ├── /dto                 # ✉️ Objetos de transferência.
-        └── /security            # 🛡️ Autenticação e autorização.
+        ├── /security            # 🛡️ Autenticação e autorização.
+        ├── /exception           # 🚨 Tratamento centralizado de erros.
+        └── /validation          # ✅ Validações customizadas.
 ```
 
 ---
@@ -288,7 +294,9 @@ _A definir._
 | **Novo Pedido** | _em breve_ |
 | **Status do Pedido** | _em breve_ |
 | **Meu Perfil (CRUD de cliente)** | _em breve_ |
+| **Pedidos Recebidos** | _em breve_ |
 | **Avaliação do Agente** | _em breve_ |
+| **Execução de Contrato** | _em breve_ |
 
 ---
 
